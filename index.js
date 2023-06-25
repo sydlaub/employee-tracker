@@ -3,13 +3,15 @@
 
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
+const util = require('util');
+require("console.table");
 
 // connect to database
 const db = mysql.createConnection(
     {
         host: 'losthost',
         user: 'root',
-        password: 'Tommybaha22!',
+        password: '',
         database: 'employee_tracker_db'
     },
     console.log('Connection to employee_tracker_db successful!')
@@ -21,7 +23,7 @@ const db = mysql.createConnection(
 
 const startApp = () => {
     inquirer
-    .prompt([
+    .prompt(
         {
             type: "list",
             message: "Please select from the following options:",
@@ -37,9 +39,29 @@ const startApp = () => {
                 "I'm done"
             ]
         }
-    ])
+    ).then(function (response) {
+        console.log(response.action)
+        switch (response.action) {
+            case "View all departments": viewDeptartment();
+                break;
+            case "View all roles": viewRoles();
+                break;
+            case "View all employees": viewEmployees();
+                break;
+            case "Add a department": addDeptartment();
+                break;
+            case "Add a role": addRole();
+                break;
+            case "Add an employee": addEmployee();
+                break;
+            case "Update an employee role": updateRole();
+                break;
+            case "I'm done":
+                console.log("Thank you!");
+                process.exit();
+        }
+    }).catch(err => console.log(err));
 };
-
 
 
 // call start app function
