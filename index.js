@@ -77,10 +77,9 @@ const viewDeptartment = () => {
     // THEN I am presented with a formatted table showing department names and department ids
     db.query(
         'SELECT * FROM department',
-        function (err, results, fields) {
+        function (err, results) {
             console.table(results); // results contains rows returned by server
             startApp();
-            // console.log(fields); // fields contains extra meta data about results, if available
         }
     );
     
@@ -91,7 +90,13 @@ const viewDeptartment = () => {
 const viewRoles = () => {
     // WHEN I choose to view all roles
     // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
-    
+    db.query(
+        'SELECT * FROM roles',
+        function (err, results) {
+            console.table(results); // results contains rows returned by server
+            startApp();
+        }
+    );
 };
 
 const viewEmployees = () => {
