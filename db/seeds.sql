@@ -11,8 +11,12 @@ VALUES (1, "Sales Lead", "Sales", 100000),
        (4, "Software Engineer", "Engineering", 120000),
        (5, "Account Manager", "Finance", 160000),
        (6, "Accountant", "Finance", 125000),
-       (7, "Legal Team Lead", "Legal" 250000),
+       (7, "Legal Team Lead", "Legal", 250000),
        (8, "Lawyer", "Legal", 190000);
 
-INSERT INTO employees (id, first_name, last_name, title, department, salary, Manager)
-VALUES  (1, "")  
+INSERT INTO employees (id, first_name, last_name, manager_id)
+VALUES  (1, "Sydney", "Laub", NULL),
+        (2, "Eli", "Manning", NULL),
+        (3, "Emily", "Levin", NULL),
+        (4, "Marlee", "Sullivan", NULL),
+        (5, "Coco", "Lurz", NULL);

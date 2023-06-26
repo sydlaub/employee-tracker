@@ -9,25 +9,24 @@ require("console.table");
 // connect to database
 const db = mysql.createConnection(
     {
-        host: 'losthost',
+        host: '127.0.0.1',
         user: 'root',
-        password: '',
+        password: 'Tommybaha22!',
         database: 'employee_tracker_db'
-    },
-    console.log('Connection to employee_tracker_db successful!')
+    }
+    // console.log('Connection to employee_tracker_db successful!')
 );
-
 
 // WHEN I start the application
 // THEN I am presented with the following options: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
 
 const startApp = () => {
     inquirer
-    .prompt(
+    .prompt([
         {
             type: "list",
             message: "Please select from the following options:",
-            name: 'start',
+            name: "start",
             choices: [
                 "View all departments",
                 "View all roles",
@@ -39,9 +38,11 @@ const startApp = () => {
                 "I'm done"
             ]
         }
-    ).then(function (response) {
-        console.log(response.action)
-        switch (response.action) {
+    ])
+    .then((response) => {
+        console.log('test string')
+        console.log(response.start)
+        switch (response.start) {
             case "View all departments": viewDeptartment();
                 break;
             case "View all roles": viewRoles();
@@ -71,8 +72,17 @@ startApp();
 
 // create variables for each case that user could pick
 const viewDeptartment = () => {
+    console.log("test");
     // WHEN I choose to view all departments
     // THEN I am presented with a formatted table showing department names and department ids
+    db.query(
+        'SELECT * FROM department',
+        function (err, results, fields) {
+            console.table(results); // results contains rows returned by server
+            startApp();
+            // console.log(fields); // fields contains extra meta data about results, if available
+        }
+    );
     
 };
 
