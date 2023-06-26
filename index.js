@@ -114,9 +114,31 @@ const viewEmployees = () => {
 
 
 
-const addDeptartment = () => {
+async function addDeptartment() {
     // WHEN I choose to add a department
     // THEN I am prompted to enter the name of the department and that department is added to the database
+    inquirer
+    .prompt([
+        {
+            type: "input",
+            message: "What is the name of the department you would like to add?",
+            name: "newDepartment"
+        }
+    ]).then(response => {
+        db.query(
+            "INSERT INTO department SET ?", 
+            {name: response.newDepartment}, function 
+            (err, results) {
+            if (err) {
+                console.log(err)
+            } else {
+                db.query('SELECT * FROM department', (err, results) => {
+                    err ? console.log(err) : console.table(results);
+                    startApp();
+                })
+            }
+        })
+    })
     
 };
 
