@@ -102,7 +102,13 @@ const viewRoles = () => {
 const viewEmployees = () => {
     // WHEN I choose to view all employees
     // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-
+    db.query(
+        'SELECT * FROM employees',
+        function (err, results) {
+            console.table(results); // results contains rows returned by server
+            startApp();
+        }
+    );
 };
 
 
