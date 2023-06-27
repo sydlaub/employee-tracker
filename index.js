@@ -22,46 +22,46 @@ const db = mysql.createConnection(
 
 const startApp = () => {
     inquirer
-    .prompt([
-        {
-            type: "list",
-            message: "Please select from the following options:",
-            name: "start",
-            choices: [
-                "View all departments",
-                "View all roles",
-                "View all employees",
-                "Add a department",
-                "Add a role",
-                "Add an employee",
-                "Update an employee role",
-                "I'm done"
-            ]
-        }
-    ])
-    .then((response) => {
-        console.log('test string')
-        console.log(response.start)
-        switch (response.start) {
-            case "View all departments": viewDeptartment();
-                break;
-            case "View all roles": viewRoles();
-                break;
-            case "View all employees": viewEmployees();
-                break;
-            case "Add a department": addDeptartment();
-                break;
-            case "Add a role": addRole();
-                break;
-            case "Add an employee": addEmployee();
-                break;
-            case "Update an employee role": updateRole();
-                break;
-            case "I'm done":
-                console.log("Thank you!");
-                process.exit();
-        }
-    }).catch(err => console.log(err));
+        .prompt([
+            {
+                type: "list",
+                message: "Please select from the following options:",
+                name: "start",
+                choices: [
+                    "View all departments",
+                    "View all roles",
+                    "View all employees",
+                    "Add a department",
+                    "Add a role",
+                    "Add an employee",
+                    "Update an employee role",
+                    "I'm done"
+                ]
+            }
+        ])
+        .then((response) => {
+            console.log('test string')
+            console.log(response.start)
+            switch (response.start) {
+                case "View all departments": viewDeptartment();
+                    break;
+                case "View all roles": viewRoles();
+                    break;
+                case "View all employees": viewEmployees();
+                    break;
+                case "Add a department": addDeptartment();
+                    break;
+                case "Add a role": addRole();
+                    break;
+                case "Add an employee": addEmployee();
+                    break;
+                case "Update an employee role": updateRole();
+                    break;
+                case "I'm done":
+                    console.log("Thank you!");
+                    process.exit();
+            }
+        }).catch(err => console.log(err));
 };
 
 
@@ -82,7 +82,7 @@ const viewDeptartment = () => {
             startApp();
         }
     );
-    
+
 };
 
 
@@ -118,36 +118,71 @@ async function addDeptartment() {
     // WHEN I choose to add a department
     // THEN I am prompted to enter the name of the department and that department is added to the database
     inquirer
-    .prompt([
-        {
-            type: "input",
-            message: "What is the name of the department you would like to add?",
-            name: "newDepartment"
-        }
-    ]).then(response => {
-        db.query(
-            "INSERT INTO department SET ?", 
-            {name: response.newDepartment}, function 
-            (err, results) {
-            if (err) {
-                console.log(err)
-            } else {
-                db.query('SELECT * FROM department', (err, results) => {
-                    err ? console.log(err) : console.table(results);
-                    startApp();
-                })
+        .prompt([
+            {
+                type: "input",
+                message: "What is the name of the department you would like to add?",
+                name: "newDepartment"
             }
+        ]).then(response => {
+            db.query(
+                "INSERT INTO department SET ?",
+                { name: response.newDepartment }, function
+                (err, results) {
+                if (err) {
+                    console.log(err)
+                } else {
+                    db.query('SELECT * FROM department', (err, results) => {
+                        err ? console.log(err) : console.table(results);
+                        startApp();
+                    })
+                }
+            })
         })
-    })
-    
+
 };
 
 
 
-const addRole = () => {
+async function addRole() {
     // WHEN I choose to add a role
     // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
-    
+    const departmentChoices = () => db.promise().query('SELECT * FROM department').then((rows) => {
+        let depArr = rows[0].map(obj => obj.name);
+        return depArr
+    })
+
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "What is the name of the role you would like to add?",
+                name: "newRoleName"
+            },
+            {
+                type: "input",
+                message: "What is the salary for this new role?",
+                name: "newRoleSalary"
+            },
+            {
+                type: "list",
+                message: "Which department is this role in?",
+                name: "newRoleDep",
+                choices: departmentChoices
+            }
+        ]).then(response => {
+            db.query("INSERT INTO roles SET ?", { title: response.newRoleName, department: response.newRoleDep, salary: response.newRoleSalary })
+        })
+                .then(data => {
+                    db.query('SELECT * FROM roles',
+                        function (err, results) {
+                            console.table(results); // results contains rows returned by server
+                            startApp();
+                            console.log(data);
+
+                        })
+        }
+        )
 };
 
 
@@ -155,7 +190,52 @@ const addRole = () => {
 const addEmployee = () => {
     // WHEN I choose to add an employee
     // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-    
+    const rolesQuery = 'SELECT title FROM roles';
+    db.query(rolesQuery, (error, results) => {
+        if (error) {
+            console.error("Error executing query:", error);
+            return;
+        }
+    });
+
+    const managerQuery = 'SELECT manager FROM employees';
+    db.query(managerQuery, (error, results) => {
+        if (error) {
+            console.error("Error executing query:", error);
+            return;
+        }
+    })
+    const roleChoices = results.map((row) => row.title);
+    // console.log(roleChoices);
+    const managerChoices = results.map((row) => row.manager);
+    // console.log(managerChoices);
+
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "What is the employee's first name?",
+                name: "newFirstName"
+            },
+            {
+                type: "input",
+                message: "What is the employee's last name?",
+                name: "newLastName"
+            },
+            {
+                type: "list",
+                message: "What is the new employee's role?",
+                name: "newEmployeeRole",
+                choices: roleChoices
+            },
+            {
+                type: "list",
+                message: "Who is the new employee's manager?",
+                name: "newEmployeeManager",
+                choices: managerChoices
+            }
+        ])
+
 };
 
 
