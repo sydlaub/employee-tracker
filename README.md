@@ -6,13 +6,28 @@ This is a command line application that allows the user to easily track and mana
 ## Links
 [Link to GitHub Repo](https://github.com/sydlaub/employee-tracker)
 
-[Link to walkthrough video]()
+[Link to walkthrough video](https://drive.google.com/file/d/1Drsq5vQikcrpTGZZqEO6JWVWiNhda7if/view)
 
 ## Installation Instructions
+To clone the GitHub repository:
 
+git clone git@github.com:sydlaub/employee-tracker.git
+
+Then naviagte into the cloned directory and download the necessary dependencies by typing into the command line:
+
+npm install
+
+Once the dependencies and MySQL Workbench are installed, start the application by typing into the command line:
+
+node index.js
 
 ## Technologies
+Built with Node.js
+Built with Inquirer.js
+Built with Express.js
+Built with MySQL
+Built with console.table
 
 ## Credits
-
+Collaborators include teachers, TAs, tutors and fellow students in the Columbia University Full Stack Engineering Bootcamp 2023 Spring cohort.
 
