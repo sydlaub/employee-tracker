@@ -40,7 +40,7 @@ const startApp = () => {
             }
         ])
         .then((response) => {
-            console.log('test string')
+            // console.log('test string')
             console.log(response.start)
             switch (response.start) {
                 case "View all departments": viewDeptartment();
@@ -72,7 +72,7 @@ startApp();
 
 // create variables for each case that user could pick
 const viewDeptartment = () => {
-    console.log("test");
+    // console.log("test");
     // WHEN I choose to view all departments
     // THEN I am presented with a formatted table showing department names and department ids
     db.query(
@@ -259,19 +259,51 @@ const addEmployee = () => {
 const updateRole = () => {
     // WHEN I choose to update an employee role
     // THEN I am prompted to select an employee to update and their new role and this information is updated in the database
+    db.query('SELECT * FROM employees', (error, results) => {
+        if (error) {
+            console.error('Error fetching employees:', error);
+            return;
+        }
+        // code to prepare employee choices
+        const employeeChoices = results.map((employee) => ({
+            name: `${employee.first_name} ${employee.last_name}`,
+            value: employee.id,
+        }));
 
-};
+        inquirer
+            .prompt([
+                {
+                    type: "list",
+                    name: "employeeId",
+                    message: "Select the employee whose role you would like to update:",
+                    choices: employeeChoices
+                },
+                {
+                    type: "input",
+                    name: "newRole",
+                    message: "Enter the new role:"
+                },
+            ]).then((answers) => {
+                const { employeeId, newRole } = answers;
 
+                // const query = "UPDATE employees SET title = ? WHERE employee_id = ?";
+                
+                db.query("UPDATE employees SET title = ? WHERE id = ?", [newRole, employeeId], (error, results) => {
+                    if (error) {
+                        console.error("Error updating role:", error);
+                        return;
+                    }
+                    console.log('Role updated successfully!');
+                })
 
+            }).then(data => {
+                    db.query('SELECT * FROM employees', (err, results) => {
+                        console.table(results); // results contains rows returned by server
+                        startApp();
+                        console.log(data);
 
+                    })
 
-
-
-
-
-
-
-
-
-
-
+                })
+            })
+    };
