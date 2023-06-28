@@ -173,14 +173,14 @@ async function addRole() {
         ]).then(response => {
             db.query("INSERT INTO roles SET ?", { title: response.newRoleName, department: response.newRoleDep, salary: response.newRoleSalary })
         })
-                .then(data => {
-                    db.query('SELECT * FROM roles',
-                        function (err, results) {
-                            console.table(results); // results contains rows returned by server
-                            startApp();
-                            console.log(data);
+        .then(data => {
+            db.query('SELECT * FROM roles',
+                function (err, results) {
+                    console.table(results); // results contains rows returned by server
+                    startApp();
+                    console.log(data);
 
-                        })
+                })
         }
         )
 };
@@ -190,52 +190,68 @@ async function addRole() {
 const addEmployee = () => {
     // WHEN I choose to add an employee
     // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-    const rolesQuery = 'SELECT title FROM roles';
-    db.query(rolesQuery, (error, results) => {
+    const query = 'SELECT * FROM employees';
+    db.query(query, ["NULL"], (error, results) => {
         if (error) {
             console.error("Error executing query:", error);
             return;
         }
-    });
+        const roleChoices = results.map((row) => row.title);
+        // console.log(roleChoices);
+        const managerChoices = results.map((row) => row.manager);
+        // console.log(managerChoices);
+        const departmentChoices = results.map((row) => row.department);
 
-    const managerQuery = 'SELECT manager FROM employees';
-    db.query(managerQuery, (error, results) => {
-        if (error) {
-            console.error("Error executing query:", error);
-            return;
-        }
-    })
-    const roleChoices = results.map((row) => row.title);
-    // console.log(roleChoices);
-    const managerChoices = results.map((row) => row.manager);
-    // console.log(managerChoices);
+        inquirer
+            .prompt([
+                {
+                    type: "input",
+                    message: "What is the employee's first name?",
+                    name: "newFirstName"
+                },
+                {
+                    type: "input",
+                    message: "What is the employee's last name?",
+                    name: "newLastName"
+                },
+                {
+                    type: "list",
+                    message: "What is the new employee's role?",
+                    name: "newEmployeeRole",
+                    choices: roleChoices
+                },
+                {
+                    type: "list",
+                    message: "Which department is the employee in?",
+                    name: "newEmployeeDepartment",
+                    choices: departmentChoices
+                },
+                {
+                    type: "input",
+                    message: "What is this employee's salary?",
+                    name: "newEmployeeSalary"
+                },
+                {
+                    type: "list",
+                    message: "Who is the new employee's manager?",
+                    name: "newEmployeeManager",
+                    choices: managerChoices
+                }
+            ]).then(response => {
+                db.query("INSERT INTO employees SET ?", { first_name: response.newFirstName, last_name: response.newLastName, title: response.newEmployeeRole, department: response.newEmployeeDepartment, salary: response.newEmployeeSalary, manager: response.newEmployeeManager })
+            })
+            .then(data => {
+                db.query('SELECT * FROM employees',
+                    function (err, results) {
+                        console.table(results); // results contains rows returned by server
+                        startApp();
+                        console.log(data);
 
-    inquirer
-        .prompt([
-            {
-                type: "input",
-                message: "What is the employee's first name?",
-                name: "newFirstName"
-            },
-            {
-                type: "input",
-                message: "What is the employee's last name?",
-                name: "newLastName"
-            },
-            {
-                type: "list",
-                message: "What is the new employee's role?",
-                name: "newEmployeeRole",
-                choices: roleChoices
-            },
-            {
-                type: "list",
-                message: "Who is the new employee's manager?",
-                name: "newEmployeeManager",
-                choices: managerChoices
+                    })
             }
-        ])
+            )
 
+    })
 };
 
 
